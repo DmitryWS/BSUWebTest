@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<!--
+Для работы требуется OSPanel.
+-->
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<title>Зачёт для WEB-программирования</title>
+		<style>
+			table
+			{
+				border: 1px solid grey;
+			}
+			
+			th
+			{
+				border: 1px solid grey;
+			}
+			
+			td
+			{
+				border: 1px solid grey;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="jsonData"></div>
+		<form>
+			<p><b>A:</b><input name="inputA" type="text" value="3"></p>
+			<p><b>B:</b><input name="inputB" type="text" value="5"></p>
+			<p><input name="addButton" type="button" value="Добавить" onclick="addAB()"></p>
+			<p><input name="removeButton" type="button" value="Удалить" onclick="removeAB()"></p>
+			<p><input name="editButton" type="button" value="Изменить" onclick="editAB()"></p>
+		</form>
+		<script>
+			function tableColumn(a, b)
+			{
+				return "<tr class=\"myColumn\"><td class=\"varA\">" + a + "</td><td class=\"varB\">" + b + "</td></tr>";
+			}
+			
+			function updateJSON()
+			{
+				var txt = "<table id=\"myTable\"><tr><th>A</th><th>B</th></tr>";
+				for (var i = 0; i < jsonArray.length; i++)
+				{
+					txt += tableColumn(jsonArray[i].A, jsonArray[i].B);
+				}
+				txt += "</table><br/>";
+				$("#jsonData").html(txt);
+				var sumA = 0, sumB = 0;
+				$("#myTable tr.myColumn").each(function()
+				{
+					sumA += parseInt($(this).find("td.varA").html());
+					sumB += parseInt($(this).find("td.varB").html());
+				});
+				var sumText = "sumA = " + sumA + ", sumB = " + sumB;
+				$("#jsonData").append(sumText);
+			}
+			
+			var jsonArray;
+			$.getJSON("/array.json", function(data)
+			{
+				jsonArray = data;
+				updateJSON();
+			});
+			
+			function getA()
+			{
+				return document.querySelector("input[name='inputA']").value;
+			}
+			
+			function getB()
+			{
+				return document.querySelector("input[name='inputB']").value;
+			}
+			
+			function addAB()
+			{
+				jsonArray.push({ A: getA(), B: getB() });
+				updateJSON();
+			}
+			
+			function removeAB()
+			{
+				jsonArray.pop();
+				updateJSON();
+			}
+			
+			function editAB()
+			{
+				jsonArray.pop();
+				jsonArray.push({ A: getA(), B: getB() });
+				updateJSON();
+			}
+		</script>
+	</body>
+</html>
